@@ -1,0 +1,39 @@
+.add-mp-gallery-images {
+    padding : 10px;
+    }
+
+.mp-gallery-metabox-sortable-placeholder {
+    width         : 80px;
+    display       : inline-block;
+    cursor        : move;
+    border        : 1px solid #D5D5D5;
+    margin        : 9px 9px 0 0;
+    background    : #F7F7F7;
+    border-radius : 2px;
+    position      : relative;
+    box-sizing    : border-box;
+    height        : 170px !important;
+    }
+
+.mp-gallery-images {
+    display    : block;
+    text-align : justify;
+    position   : relative;
+    }
+
+.mp-gallery-images > li {
+    display       : inline-block;
+    width         : 150px;
+    padding       : 14px;
+    position      : relative;
+    background    : #FFFFFF;
+    border-radius : 2px;
+    }
+
+.mp-gallery-images > li .actions {
+    text-align : center;
+    }
+
+.mp-gallery-iframe-new-button {
+    float : left;
+    }
