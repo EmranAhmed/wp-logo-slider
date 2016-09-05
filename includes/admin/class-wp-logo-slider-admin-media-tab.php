@@ -30,7 +30,7 @@
 					require_once ABSPATH . 'wp-admin/includes/class-wp-list-table.php';
 				}
 
-				include_once WP_Logo_Slider()->plugin_path() . '/includes/admin/class-mp-gallery-admin-list-table-iframe.php';
+				include_once WP_Logo_Slider()->plugin_path() . '/includes/admin/class-wp-logo-slider-admin-list-table-iframe.php';
 
 				$wp_list_table = new WP_Logo_Slider_Admin_List_Table_Iframe();
 

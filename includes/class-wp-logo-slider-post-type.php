@@ -47,7 +47,7 @@
 					'show_ui'             => TRUE,
 					'show_in_menu'        => TRUE,
 					'menu_position'       => 20,
-					'menu_icon'           => 'dashicons-image-flip-horizontal',
+					'menu_icon'           => 'dashicons-leftright',
 					'show_in_admin_bar'   => TRUE,
 					'show_in_nav_menus'   => FALSE,
 					'can_export'          => TRUE,

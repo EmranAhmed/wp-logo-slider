@@ -43,6 +43,7 @@
 					'jquery',
 					'jquery-ui-sortable',
 					'jquery-ui-core',
+					'wp-util'
 				) );
 
 

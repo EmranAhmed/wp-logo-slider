@@ -32,12 +32,18 @@
 				// Load plugin text domain
 				add_action( 'init', array( $this, 'load_plugin_textdomain' ) );
 
+				add_action( 'admin_footer', array( $this, 'print_templates' ) );
+
 				add_filter( 'plugin_action_links_' . plugin_basename( __FILE__ ), array( $this, 'plugin_action_links' ) );
 
 				$this->includes();
 
 				do_action( 'wp_logo_slider_loaded', $this );
 
+			}
+
+			public function print_templates() {
+				include_once 'includes/wp-logo-slider-js-template.php';
 			}
 
 			/**
@@ -120,3 +126,42 @@
 	}
 
 	WP_Logo_Slider();
+
+	function remove_caption( $form_fields, $post ) {
+
+		$custom_link = esc_url( get_post_meta( $post->ID, 'custom_link', TRUE ) );
+
+		$form_fields[ 'custom_link' ] = array(
+			'input'         => 'text',
+			'value'         => $custom_link,
+			'label'         => __( 'Custom link' ),
+			'required'      => FALSE,
+			//'helps'         => __( 'Set a location for this attachment' ),
+			'show_in_edit'  => FALSE,
+			'show_in_modal' => TRUE,
+			//'extra_rows'    => array( 'classname' => 'HTML' ),
+			//'errors'        => array( 'Voool' )
+		);
+
+		return $form_fields;
+	}
+
+	add_filter( 'attachment_fields_to_edit', 'remove_caption', 10, 2 );
+
+
+	function insert_custom_default_caption( $post, $attachment ) {
+
+		if ( substr( $post[ 'post_mime_type' ], 0, 5 ) == 'image' ) {
+
+			if ( strlen( trim( $attachment[ 'custom_link' ] ) ) > 0 && esc_url( $attachment[ 'custom_link' ] ) ) {
+				update_post_meta( $post[ 'ID' ], "custom_link", esc_url( $attachment[ 'custom_link' ] ) );
+				//$post[ 'custom_link' ] = get_post_meta( $post->ID, "custom_link", TRUE )
+			} else {
+				$post[ 'errors' ][ 'custom_link' ][ 'errors' ][] = __( 'Image custom link was empty.' );
+			}
+		}
+
+		return $post;
+	}
+
+	add_filter( 'attachment_fields_to_save', 'insert_custom_default_caption', 10, 2 );

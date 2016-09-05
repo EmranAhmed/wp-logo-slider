@@ -25,6 +25,7 @@ jQuery(function ($) {
                 title    : $el.data('choose'),
                 multiple : 'add',
                 editing  : true,
+                //editing  : false,
                 library  : {
                     type : 'image'
                 },
@@ -48,7 +49,14 @@ jQuery(function ($) {
                         attachment_ids = attachment_ids ? attachment_ids + ',' + attachment.id : attachment.id;
                         var attachment_image = attachment.sizes && attachment.sizes.thumbnail ? attachment.sizes.thumbnail.url : attachment.url;
 
-                        $images.append('<li class="image" data-attachment_id="' + attachment.id + '"><img src="' + attachment_image + '" /><ul class="actions"><li><a href="#" class="delete" title="' + $el.data('delete') + '">' + $el.data('text') + '</a></li></ul></li>');
+                        var template = wp.template('wp-logo-slider-image-single');
+                        $images.append(template({
+                            attachment_id    : attachment.id,
+                            attachment_image : attachment_image,
+                            delete_title     : $el.data('delete'),
+                            delete_text      : $el.data('text')
+                        }));
+                        //$images.append('<li class="image" data-attachment_id="' + attachment.id + '"><img src="' + attachment_image + '" /><ul class="actions"><li><a href="#" class="delete" title="' + $el.data('delete') + '">' + $el.data('text') + '</a></li></ul></li>');
                     }
                 });
 
