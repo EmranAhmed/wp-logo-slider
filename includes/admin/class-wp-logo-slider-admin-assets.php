@@ -1,13 +1,10 @@
 <?php
 
-	if ( ! defined( 'ABSPATH' ) ) {
-		exit;
-	}
+	defined( 'ABSPATH' ) or die( 'Keep Quit' );
 
-	if ( ! class_exists( 'MP_Gallery_Admin_Assets' ) ) :
+	if ( ! class_exists( 'WP_Logo_Slider_Admin_Assets' ) ) :
 
-
-		class MP_Gallery_Admin_Assets {
+		class WP_Logo_Slider_Admin_Assets {
 
 			/**
 			 * Hook in tabs.
@@ -27,11 +24,11 @@
 
 				// Register admin styles
 				wp_register_style( 'jquery-ui-style', '//code.jquery.com/ui/' . $jquery_version . '/themes/smoothness/jquery-ui.css', array(), $jquery_version );
-				wp_register_style( 'mp-gallery-admin-styles', MP_Gallery()->plugin_url() . '/assets/css/admin.css', array() );
+				wp_register_style( 'wp-logo-slider-admin-styles', WP_Logo_Slider()->plugin_url() . '/assets/css/admin.css', array() );
 
 				wp_enqueue_style( 'jquery-ui-style' );
 				//wp_enqueue_style( 'wp-color-picker' );
-				wp_enqueue_style( 'mp-gallery-admin-styles' );
+				wp_enqueue_style( 'wp-logo-slider-admin-styles' );
 
 			}
 
@@ -42,7 +39,7 @@
 
 
 				// Register scripts
-				wp_register_script( 'mp-gallery-admin-scripts', MP_Gallery()->plugin_url() . '/assets/js/admin.js', array(
+				wp_register_script( 'wp-logo-slider-admin-scripts', WP_Logo_Slider()->plugin_url() . '/assets/js/admin.js', array(
 					'jquery',
 					'jquery-ui-sortable',
 					'jquery-ui-core',
@@ -50,16 +47,18 @@
 
 
 				wp_enqueue_media();
-				wp_enqueue_script( 'mp-gallery-admin-scripts' );
+				wp_enqueue_script( 'wp-logo-slider-admin-scripts' );
 
 				$params = array(
-					'plugin_url' => MP_Gallery()->plugin_url(),
-					'ajax_url'   => admin_url( 'admin-ajax.php' ),
+					'plugin_url' => WP_Logo_Slider()->plugin_url(),
+					'ajax_url'   => esc_url( admin_url( 'admin-ajax.php' ) ),
 				);
 
-				wp_localize_script( 'mp-gallery-admin-scripts', 'mp_gallery_admin_js_object', $params );
+				wp_localize_script( 'wp-logo-slider-admin-scripts', 'wp_logo_slider_admin_js_object', $params );
 			}
 		}
+
+		new WP_Logo_Slider_Admin_Assets();
 	endif;
 
-	new MP_Gallery_Admin_Assets();
+

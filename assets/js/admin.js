@@ -4,22 +4,24 @@ jQuery(function ($) {
 
     (function () {
 
-        var mp_gallery_frame;
-        var $gallery_image_ids = $('#mp-gallery-image-field');
-        var $images = $('#mp-gallery-images-container').find('ul.mp-gallery-images');
+        var wp_logo_slider_frame,
+            $slider_image_ids        = $('#wp-logo-slider-image-field'),
+            $slider_images_container = $('#wp-logo-slider-images-container');
 
-        $('.add-mp-gallery-images').on('click', 'a', function (event) {
+        var $images = $slider_images_container.find('ul.wp-logo-slider-images');
+
+        $('.add-wp-logo-slider-images').on('click', 'a', function (event) {
             var $el = $(this);
 
             event.preventDefault();
 
             // If the media frame already exists, reopen it.
-            if (mp_gallery_frame) {
-                mp_gallery_frame.open();
+            if (wp_logo_slider_frame) {
+                wp_logo_slider_frame.open();
                 return;
             }
 
-            mp_gallery_frame = wp.media.frames.mp_gallery = wp.media({
+            wp_logo_slider_frame = wp.media.frames.wp_logo_slider = wp.media({
                 title    : $el.data('choose'),
                 multiple : 'add',
                 editing  : true,
@@ -35,9 +37,9 @@ jQuery(function ($) {
 
 
             // When an image is selected, run a callback.
-            mp_gallery_frame.on('select', function () {
-                var selection = mp_gallery_frame.state().get('selection');
-                var attachment_ids = $gallery_image_ids.val();
+            wp_logo_slider_frame.on('select', function () {
+                var selection = wp_logo_slider_frame.state().get('selection');
+                var attachment_ids = $slider_image_ids.val();
 
                 selection.map(function (attachment) {
                     attachment = attachment.toJSON();
@@ -50,11 +52,11 @@ jQuery(function ($) {
                     }
                 });
 
-                $gallery_image_ids.val(attachment_ids);
+                $slider_image_ids.val(attachment_ids);
             });
 
             // Finally, open the modal.
-            mp_gallery_frame.open();
+            wp_logo_slider_frame.open();
         });
 
         // Image ordering
@@ -66,7 +68,7 @@ jQuery(function ($) {
             forceHelperSize      : false,
             helper               : 'clone',
             opacity              : 0.65,
-            placeholder          : 'mp-gallery-metabox-sortable-placeholder',
+            placeholder          : 'wp-logo-slider-metabox-sortable-placeholder',
             start                : function (event, ui) {
                 ui.item.css('background-color', '#f6f6f6');
             },
@@ -76,32 +78,30 @@ jQuery(function ($) {
             update               : function () {
                 var attachment_ids = '';
 
-                $('#mp-gallery-images-container').find('ul li.image').css('cursor', 'default').each(function () {
+                $slider_images_container.find('ul li.image').css('cursor', 'default').each(function () {
                     var attachment_id = $(this).attr('data-attachment_id');
                     attachment_ids = attachment_ids + attachment_id + ',';
                 });
 
-                $gallery_image_ids.val(attachment_ids);
+                $slider_image_ids.val(attachment_ids);
             }
         });
 
         // Remove images
-        $('#mp-gallery-images-container').on('click', 'a.delete', function () {
+        $slider_images_container.on('click', 'a.delete', function () {
             $(this).closest('li.image').remove();
 
             var attachment_ids = '';
 
-            $('#mp-gallery-images-container').find('ul li.image').css('cursor', 'default').each(function () {
+            $slider_images_container.find('ul li.image').css('cursor', 'default').each(function () {
                 var attachment_id = $(this).attr('data-attachment_id');
                 attachment_ids = attachment_ids + attachment_id + ',';
             });
 
-            $gallery_image_ids.val(attachment_ids);
+            $slider_image_ids.val(attachment_ids);
 
             return false;
         });
 
     }());
-
-
 });

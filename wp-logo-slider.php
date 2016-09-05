@@ -1,20 +1,18 @@
 <?php
 	/**
-	 * Plugin Name: WP Logo Slider
-	 * Description: WordPress Logo Slider
-	 * Plugin URI:  https://wordpress.org/plugins/wp-logo-slider/
+	 * Plugin Name:  WP Logo Slider
+	 * Description:  WordPress Logo Slider
+	 * Plugin URI:   https://wordpress.org/plugins/wp-logo-slider/
 	 * Version:      1.0.0
 	 * Author:       Emran
 	 * Author URI:   https://emran.me/
 	 * License:      GPLv2.0+
 	 * License URI:  http://www.gnu.org/licenses/gpl-2.0.txt
-	 * Text Domain: wp-logo-slider
-	 * Domain Path: /languages/
+	 * Text Domain:  wp-logo-slider
+	 * Domain Path:  /languages/
 	 */
 
-	if ( ! defined( 'ABSPATH' ) ) {
-		exit; // Exit if accessed directly.
-	}
+	defined( 'ABSPATH' ) or die( 'Keep Quit' );
 
 	if ( ! class_exists( 'WP_Logo_Slider' ) ) :
 
@@ -65,12 +63,12 @@
 				include_once 'includes/class-wp-logo-slider-post-type.php';
 
 				if ( is_admin() ) {
-					include_once 'includes/admin/class-mp-gallery-admin-assets.php';
-					include_once 'includes/admin/meta-boxes/class-mp-gallery-meta-box-images.php';
-					include_once 'includes/admin/class-mp-gallery-admin-meta-boxes.php';
-					include_once 'includes/admin/class-mp-gallery-admin-media-tab.php';
-				}
 
+					include_once 'includes/admin/class-wp-logo-slider-admin-assets.php';
+					include_once 'includes/admin/meta-boxes/class-wp-logo-slider-meta-box-images.php';
+					include_once 'includes/admin/class-wp-logo-slider-admin-meta-boxes.php';
+					include_once 'includes/admin/class-wp-logo-slider-admin-media-tab.php';
+				}
 			}
 
 			/**
@@ -95,7 +93,7 @@
 			 * @return void
 			 */
 			public function load_plugin_textdomain() {
-				load_plugin_textdomain( 'mp-gallery', FALSE, dirname( plugin_basename( __FILE__ ) ) . '/languages/' );
+				load_plugin_textdomain( 'wp-logo-slider', FALSE, dirname( plugin_basename( __FILE__ ) ) . '/languages/' );
 			}
 
 			/**
@@ -107,15 +105,18 @@
 			 */
 			public function plugin_action_links( $links ) {
 				$plugin_links = array(
-					'<a href="' . admin_url( 'admin.php?page=mp-gallery-settings' ) . '">' . esc_html__( 'Settings', 'mp-gallery' ) . '</a>',
+					'<a href="' . esc_url( admin_url( 'admin.php?page=wp-logo-slider-settings' ) ) . '">' . esc_html__( 'Settings', 'wp-logo-slider' ) . '</a>',
 				);
 
 				return array_merge( $plugin_links, $links );
 			}
-
 		}
 
-		WP_Logo_Slider::get_instance();
 
 	endif;
 
+	function WP_Logo_Slider() {
+		return WP_Logo_Slider::get_instance();
+	}
+
+	WP_Logo_Slider();
