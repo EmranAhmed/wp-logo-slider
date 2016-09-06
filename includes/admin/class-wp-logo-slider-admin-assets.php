@@ -51,8 +51,12 @@
 				wp_enqueue_script( 'wp-logo-slider-admin-scripts' );
 
 				$params = array(
-					'plugin_url' => WP_Logo_Slider()->plugin_url(),
-					'ajax_url'   => esc_url( admin_url( 'admin-ajax.php' ) ),
+					'plugin_url'   => WP_Logo_Slider()->plugin_url(),
+					'ajax_url'     => esc_url( admin_url( 'admin-ajax.php' ) ),
+					'delete_title' => esc_attr__( 'Delete Image', 'wp-logo-slider' ),
+					'delete_text'  => esc_attr__( 'Delete', 'wp-logo-slider' ),
+					'change_title' => esc_attr__( 'Change Image', 'wp-logo-slider' ),
+					'change_text'  => esc_attr__( 'Change', 'wp-logo-slider' ),
 				);
 
 				wp_localize_script( 'wp-logo-slider-admin-scripts', 'wp_logo_slider_admin_js_object', $params );
@@ -61,5 +65,3 @@
 
 		new WP_Logo_Slider_Admin_Assets();
 	endif;
-
-

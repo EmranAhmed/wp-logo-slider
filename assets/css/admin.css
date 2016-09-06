@@ -1,5 +1,7 @@
 .add-wp-logo-slider-images {
-    padding : 10px;
+    padding    : 10px;
+    text-align : center;
+
     }
 
 .wp-logo-slider-metabox-sortable-placeholder {
@@ -16,22 +18,28 @@
     }
 
 .wp-logo-slider-images {
-    display    : block;
-    text-align : justify;
-    position   : relative;
+    display       : block;
+    text-align    : left;
+    position      : relative;
+    border-bottom : 1px solid #EEEEEE;
     }
 
 .wp-logo-slider-images > li {
     display       : inline-block;
     width         : 150px;
-    padding       : 14px;
+    padding       : 12px;
     position      : relative;
     background    : #FFFFFF;
     border-radius : 2px;
+    cursor        : move;
     }
 
 .wp-logo-slider-images > li .actions {
     text-align : center;
+    }
+
+.wp-logo-slider-images > li .actions li {
+    display : inline-block;
     }
 
 .wp-logo-slider-iframe-new-button {

@@ -93,7 +93,8 @@
 				$date = $defaults[ 'date' ];
 				unset( $defaults[ 'date' ] );
 
-				$defaults[ 'shortcode' ] = esc_html__( 'Short Codes', 'wp-logo-slider' );
+				$defaults[ 'shortcode' ] = esc_html__( 'Shortcodes', 'wp-logo-slider' );
+				$defaults[ 'function' ] = esc_html__( 'Function', 'wp-logo-slider' );
 				$defaults[ 'date' ]      = $date;
 
 				return $defaults;
@@ -103,6 +104,9 @@
 				switch ( $column_name ) {
 					case 'shortcode':
 						echo '<code>[wp-logo-slider id="' . get_the_ID() . '"]</code>';
+						break;
+					case 'function':
+						echo '<code>&lt;?php WP_Logo_Slider()->display("' . get_the_ID() . '"); ?&gt;</code>';
 						break;
 				}
 			}
