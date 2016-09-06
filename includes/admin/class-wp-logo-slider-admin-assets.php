@@ -37,13 +37,14 @@
 			 */
 			public function admin_scripts() {
 
-
+				wp_register_script( 'form-field-dependency', WP_Logo_Slider()->plugin_url() . '/assets/js/form-field-dependency.js' );
 				// Register scripts
 				wp_register_script( 'wp-logo-slider-admin-scripts', WP_Logo_Slider()->plugin_url() . '/assets/js/admin.js', array(
 					'jquery',
 					'jquery-ui-sortable',
 					'jquery-ui-core',
-					'wp-util'
+					'wp-util',
+					'form-field-dependency'
 				) );
 
 

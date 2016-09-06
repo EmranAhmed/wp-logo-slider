@@ -7,7 +7,7 @@
 
 		class WP_Logo_Slider_Settings {
 
-			private $settings_name = 'wp_logo_slider_setting';
+			private $settings_name = 'wp_logo_slider_settings';
 
 			private $fields = array();
 
@@ -17,10 +17,8 @@
 
 				add_action( 'admin_init', array( $this, 'settings_init' ), 99 );
 
-
 				do_action( 'wp_logo_slider_settings_init', $this );
 			}
-
 
 
 			public function settings_init() {
@@ -46,7 +44,7 @@
 							$tabs[ 'id' ] . $section[ 'id' ]
 						);
 
-						$section = apply_filters( 'wp_logo_slider_setting_fields', $section );
+						$section = apply_filters( 'wp_logo_slider_setting_fields', $section, $tabs );
 
 						foreach ( $section[ 'fields' ] as $field ) {
 
@@ -79,12 +77,27 @@
 						$this->checkbox_field_callback( $field );
 						break;
 
+					case 'radio':
+						$this->radio_field_callback( $field );
+						break;
+
+					case 'checkbox_group':
+					case 'checkbox-group':
+					case 'group-checkbox':
+					case 'group_checkbox':
+						$this->checkbox_group_field_callback( $field );
+						break;
+
 					case 'select':
 						$this->select_field_callback( $field );
 						break;
 
 					case 'number':
 						$this->number_field_callback( $field );
+						break;
+
+					case 'textarea':
+						$this->textarea_field_callback( $field );
 						break;
 
 					case 'post_select':
@@ -98,19 +111,66 @@
 			}
 
 			public function checkbox_field_callback( $args ) {
-				$current = esc_attr( Hippo_Ticket()->get_option( $args[ 'id' ] ) );
+				$current = esc_attr( WP_Logo_Slider()->get_option( $args[ 'id' ], isset( $args[ 'default' ] ) ? $args[ 'default' ] : FALSE, TRUE ) );
 				$value   = esc_attr( $args[ 'value' ] );
 				$size    = isset( $args[ 'size' ] ) && ! is_null( $args[ 'size' ] ) ? $args[ 'size' ] : 'regular';
-				$html    = sprintf( '<label><input type="checkbox" id="%2$s-field" name="%4$s[%2$s]" value="%3$s" %5$s/> %6$s</label>', $size, $args[ 'id' ], $value, $this->settings_name, checked( $current, $value, FALSE ), esc_attr( $args[ 'desc' ] ) );
 
+				$html = '<fieldset>';
+				$html .= sprintf( '<legend class="screen-reader-text"><span>%s</span></legend>', $args[ 'title' ] );
+				$html .= sprintf( '<label><input type="checkbox" id="%2$s-field" name="%4$s[%2$s]" value="%3$s" %5$s/> %6$s</label>', $size, $args[ 'id' ], $value, $this->settings_name, checked( $current, $value, FALSE ), esc_attr( $args[ 'desc' ] ) );
+				$html .= '</fieldset>';
+				echo $html;
+			}
+
+			public function radio_field_callback( $args ) {
+
+
+				$html = '<fieldset>';
+				$html .= sprintf( '<legend class="screen-reader-text"><span>%s</span></legend>', $args[ 'title' ] );
+
+				//
+				// Basically I should follow DRY :D
+				//
+
+				$current = esc_attr( WP_Logo_Slider()->get_option( $args[ 'id' ], isset( $args[ 'default' ] ) ? $args[ 'default' ] : FALSE, TRUE ) );
+
+				$html .= implode( '<br>', array_map( function ( $radio ) use ( $args, $current ) {
+					return sprintf( '<label><input type="radio" id="%2$s-field-%3$s" name="%4$s[%2$s]" value="%3$s" %5$s/> %6$s</label>', '', $args[ 'id' ], $radio[ 'id' ], $this->settings_name, checked( $current, $radio[ 'value' ], FALSE ), $radio[ 'title' ] );
+				}, $args[ 'options' ] ) );
+
+				$html .= $this->get_field_description( $args );
+				$html .= '</fieldset>';
+				echo $html;
+			}
+
+			public function checkbox_group_field_callback( $args ) {
+
+				$size = isset( $args[ 'size' ] ) && ! is_null( $args[ 'size' ] ) ? $args[ 'size' ] : 'regular';
+
+				$html = '<fieldset>';
+				$html .= sprintf( '<legend class="screen-reader-text"><span>%s</span></legend>', $args[ 'title' ] );
+
+				//
+				// Basically I should follow DRY :D
+				//
+
+				$html .= implode( '<br>', array_map( function ( $checkbox ) {
+					$current = esc_attr( WP_Logo_Slider()->get_option( $checkbox[ 'id' ], isset( $checkbox[ 'default' ] ) ? $checkbox[ 'default' ] : FALSE, TRUE ) );
+					$value   = esc_attr( $checkbox[ 'value' ] );
+
+					return sprintf( '<label><input type="checkbox" id="%2$s-field" name="%4$s[%2$s]" value="%3$s" %5$s/> %6$s</label>', '', $checkbox[ 'id' ], $value, $this->settings_name, checked( $current, $value, FALSE ), $checkbox[ 'title' ] );
+				}, $args[ 'options' ] ) );
+
+				$html .= $this->get_field_description( $args );
+				$html .= '</fieldset>';
 				echo $html;
 			}
 
 			public function select_field_callback( $args ) {
 
-				$options = apply_filters( "hippo_ticket_settings_{$args[ 'id' ]}_select_options", $args[ 'options' ] );
+				$options = apply_filters( "wp_logo_slider_settings_{$args[ 'id' ]}_select_options", $args[ 'options' ] );
 
-				$value = esc_attr( Hippo_Ticket()->get_option( $args[ 'id' ], $args[ 'default' ] ) );
+				$value = esc_attr( WP_Logo_Slider()->get_option( $args[ 'id' ], $args[ 'default' ] ) );
 
 				$options = array_map( function ( $key, $option ) use ( $value ) {
 					return "<option value='{$key}'" . selected( $key, $value, FALSE ) . ">{$option}</option>";
@@ -134,9 +194,9 @@
 
 			public function post_select_field_callback( $args ) {
 
-				$options = apply_filters( "hippo_ticket_settings_{$args[ 'id' ]}_post_select_options", $args[ 'options' ] );
+				$options = apply_filters( "wp_logo_slider_settings_{$args[ 'id' ]}_post_select_options", $args[ 'options' ] );
 
-				$value = esc_attr( Hippo_Ticket()->get_option( $args[ 'id' ], $args[ 'default' ] ) );
+				$value = esc_attr( WP_Logo_Slider()->get_option( $args[ 'id' ], isset( $args[ 'default' ] ) ? $args[ 'default' ] : '' ) );
 
 				$options = array_map( function ( $option ) use ( $value ) {
 					return "<option value='{$option->ID}'" . selected( $option->ID, $value, FALSE ) . ">$option->post_title</option>";
@@ -149,7 +209,7 @@
 			}
 
 			public function text_field_callback( $args ) {
-				$value = esc_attr( Hippo_Ticket()->get_option( $args[ 'id' ], $args[ 'default' ] ) );
+				$value = esc_attr( WP_Logo_Slider()->get_option( $args[ 'id' ], isset( $args[ 'default' ] ) ? $args[ 'default' ] : '' ) );
 				$size  = isset( $args[ 'size' ] ) && ! is_null( $args[ 'size' ] ) ? $args[ 'size' ] : 'regular';
 				$html  = sprintf( '<input type="text" class="%1$s-text" id="%2$s-field" name="%4$s[%2$s]" value="%3$s"/>', $size, $args[ 'id' ], $value, $this->settings_name );
 				$html .= $this->get_field_description( $args );
@@ -157,7 +217,7 @@
 			}
 
 			public function number_field_callback( $args ) {
-				$value = esc_attr( Hippo_Ticket()->get_option( $args[ 'id' ], $args[ 'default' ] ) );
+				$value = esc_attr( WP_Logo_Slider()->get_option( $args[ 'id' ], isset( $args[ 'default' ] ) ? $args[ 'default' ] : '' ) );
 				$size  = isset( $args[ 'size' ] ) && ! is_null( $args[ 'size' ] ) ? $args[ 'size' ] : 'small';
 
 				$min    = isset( $args[ 'min' ] ) && ! is_null( $args[ 'min' ] ) ? 'min="' . $args[ 'min' ] . '"' : '';
@@ -170,10 +230,22 @@
 				echo $html;
 			}
 
+			public function textarea_field_callback( $args ) {
+				$value = esc_attr( WP_Logo_Slider()->get_option( $args[ 'id' ], isset( $args[ 'default' ] ) ? $args[ 'default' ] : '' ) );
+				$size  = isset( $args[ 'size' ] ) && ! is_null( $args[ 'size' ] ) ? $args[ 'size' ] : 'large';
+
+				$rows = isset( $args[ 'rows' ] ) && ! is_null( $args[ 'rows' ] ) ? 'rows="' . $args[ 'rows' ] . '"' : 'rows="10"';
+				$cols = isset( $args[ 'cols' ] ) && ! is_null( $args[ 'cols' ] ) ? 'cols="' . $args[ 'cols' ] . '"' : 'cols="50"';
+
+				$html = sprintf( '<textarea class="%1$s-text" id="%2$s-field" name="%4$s[%2$s]" %5$s %6$s>%3$s</textarea>', $size, $args[ 'id' ], $value, $this->settings_name, $rows, $cols );
+				$html .= $this->get_field_description( $args );
+				echo $html;
+			}
+
 			public function add_menu() {
 				add_submenu_page(
 					'edit.php?post_type=wp-logo-slider',
-					'Slider Settings',
+					'WP Logo Slider Settings',
 					'Settings',
 					'manage_options',
 					'wp-logo-slider-settings',
@@ -182,33 +254,33 @@
 
 			public function settings_form() {
 				if ( ! current_user_can( 'manage_options' ) ) {
-					wp_die( __( 'You do not have sufficient permissions to access this page.' ) );
+					wp_die( esc_html__( 'You do not have sufficient permissions to access this page.', 'wp-logo-slider' ) );
 				}
 				?>
 				<div class="wrap settings-wrap">
 
-					<h1><?php echo get_admin_page_title() ?></h1>
+					<h1><?php echo get_admin_page_title() ?><span class="title-count"><?php echo WP_Logo_Slider()->plugin_data( 'Version' ) ?></span></h1>
 
 					<form method="post" action="options.php" enctype="multipart/form-data">
 						<?php
-							//settings_errors();
-							//settings_fields( $this->settings_name );
+							settings_errors();
+							settings_fields( $this->settings_name );
 						?>
 
-						<?php //$this->options_tabs(); ?>
+						<?php $this->options_tabs(); ?>
 
 						<div id="settings-tabs">
-							<!--							<?php /*foreach ( $this->fields as $tab ): */ ?>
+							<?php foreach ( $this->fields as $tab ): ?>
 
-								<div id="<?php /*echo $tab[ 'id' ] */ ?>"
-								     class="settings-tab hippo-ticket-setting-tab"
-								     style="<?php /*echo( ! isset( $tab[ 'active' ] ) ? 'display: none' : '' ) */ ?>">
-									<?php /*foreach ( $tab[ 'sections' ] as $section ):
+								<div id="<?php echo $tab[ 'id' ] ?>"
+								     class="settings-tab wp-logo-slider-setting-tab"
+								     style="<?php echo( ! isset( $tab[ 'active' ] ) ? 'display: none' : '' ) ?>">
+									<?php foreach ( $tab[ 'sections' ] as $section ):
 										$this->do_settings_sections( $tab[ 'id' ] . $section[ 'id' ] );
-									endforeach; */ ?>
+									endforeach; ?>
 								</div>
 
-							--><?php /*endforeach; */ ?>
+							<?php endforeach; ?>
 						</div>
 						<?php
 							submit_button();
@@ -223,7 +295,7 @@
 				<h2 class="nav-tab-wrapper wp-clearfix">
 					<?php foreach ( $this->fields as $tabs ): ?>
 						<a data-target="<?php echo $tabs[ 'id' ] ?>"
-						   class="hippo-ticket-settings-nav-tab nav-tab <?php echo ( isset( $tabs[ 'active' ] ) and $tabs[ 'active' ] ) ? 'nav-tab-active' : '' ?> "
+						   class="wp-logo-slider-settings-nav-tab nav-tab <?php echo ( isset( $tabs[ 'active' ] ) and $tabs[ 'active' ] ) ? 'nav-tab-active' : '' ?> "
 						   href="#<?php echo $tabs[ 'id' ] ?>"><?php echo $tabs[ 'title' ] ?></a>
 					<?php endforeach; ?>
 				</h2>
@@ -231,6 +303,7 @@
 			}
 
 			private function do_settings_sections( $page ) {
+
 				global $wp_settings_sections, $wp_settings_fields;
 
 				if ( ! isset( $wp_settings_sections[ $page ] ) ) {
@@ -279,7 +352,7 @@
 						$class = ' class="' . esc_attr( $field[ 'args' ][ 'class' ] ) . '"';
 					}*/
 
-					$custom_attributes = hippo_ticket_array2html_attr( isset( $field[ 'args' ][ 'attributes' ] ) ? $field[ 'args' ][ 'attributes' ] : array() );
+					$custom_attributes = wp_logo_slider_array2html_attr( isset( $field[ 'args' ][ 'attributes' ] ) ? $field[ 'args' ][ 'attributes' ] : array() );
 
 
 					$wrapper_id = ! empty( $field[ 'args' ][ 'id' ] ) ? esc_attr( $field[ 'args' ][ 'id' ] ) . '-wrapper' : '';

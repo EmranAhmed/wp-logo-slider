@@ -175,4 +175,46 @@ jQuery(function ($) {
         });
 
     }());
+
+    (function () {
+        $('[data-depends]').formFieldDependency();
+    }());
+
+    (function () {
+        /* Storage Handling */
+        var $supports_html5_storage;
+        try {
+            $supports_html5_storage = ( 'sessionStorage' in window && window.sessionStorage !== null );
+        }
+        catch (err) {
+            $supports_html5_storage = false;
+        }
+
+        var $settings_nav_tab = $('.wp-logo-slider-settings-nav-tab');
+
+        $settings_nav_tab.on('click', function (e) {
+            e.preventDefault();
+
+            $settings_nav_tab.removeClass('nav-tab-active');
+
+            $(this).addClass('nav-tab-active');
+            var id = $(this).attr('href');
+
+            if ($supports_html5_storage) {
+                window.sessionStorage.setItem('wp-logo-slider-active-setting-tab', $(this).index());
+            }
+
+            $('.wp-logo-slider-setting-tab').hide();
+            $(id).show();
+        });
+
+
+        if ($supports_html5_storage) {
+
+            var $current_state = window.sessionStorage.getItem('wp-logo-slider-active-setting-tab');
+            if ($current_state != null) {
+                $settings_nav_tab.eq($current_state).trigger('click');
+            }
+        }
+    }());
 });

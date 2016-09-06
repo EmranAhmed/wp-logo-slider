@@ -32,7 +32,7 @@
 
 				add_action( 'admin_footer', array( $this, 'print_templates' ) );
 
-				add_action( 'admin_notices', array( $this, 'php_53_requirement_notices' ) );
+				add_action( 'admin_notices', array( $this, 'php_requirement_notices' ) );
 
 				add_filter( 'attachment_fields_to_edit', array( $this, 'attachment_fields_display' ), 10, 2 );
 
@@ -45,16 +45,17 @@
 				$plugin_links = array(
 					'settings' => '<a href="' . admin_url( 'edit.php?post_type=wp-logo-slider&page=wp-logo-slider-settings' ) . '">' . esc_html__( 'Settings', 'wp-logo-slider' ) . '</a>',
 				);
+
 				return array_merge( $plugin_links, $actions );
 			}
 
-			public function php_53_requirement_notices() {
+			public function php_requirement_notices() {
 				$class                = 'notice notice-error is-dismissible';
 				$php_version          = phpversion();
 				$required_php_version = '5.3';
-				$message              = sprintf( esc_html__( 'Your server is running PHP version %1$s but WP Logo Slider requires at least %2$s.', 'wp-logo-slider' ), $php_version, $required_php_version );
+				$message              = sprintf( __( 'Your server is running PHP version %1$s but <strong>WP Logo Slider</strong> requires at least %2$s or higher.', 'wp-logo-slider' ), $php_version, $required_php_version );
 
-				if ( version_compare( $required_php_version, $php_version, '<' ) ) {
+				if ( version_compare( $required_php_version, $php_version, '>' ) ) {
 					printf( '<div class="%1$s"><p>%2$s</p></div>', $class, $message );
 				}
 			}
@@ -110,6 +111,7 @@
 				include_once 'includes/class-wp-logo-slider-post-type.php';
 
 				if ( is_admin() ) {
+					include_once 'includes/admin/wp-logo-slider-settings-fields.php';
 					include_once 'includes/admin/class-wp-logo-slider-settings.php';
 					include_once 'includes/admin/class-wp-logo-slider-admin-assets.php';
 					include_once 'includes/admin/meta-boxes/class-wp-logo-slider-meta-box-images.php';
@@ -138,20 +140,34 @@
 				return __FILE__;
 			}
 
-			public function get_option( $option, $default = FALSE ) {
-				$options = get_option( 'wp_logo_slider_setting', $default );
+			public function plugin_data( $index = FALSE ) {
+				$data = get_plugin_data( __FILE__ );
+
+				if ( $index ) {
+					return $data[ $index ];
+				}
+
+				return $data;
+			}
+
+			public function get_option( $option, $default = FALSE, $is_checkbox = FALSE ) {
+				$options = get_option( 'wp_logo_slider_settings', $default );
 				if ( isset( $options[ $option ] ) ) {
 					return apply_filters( "wp_logo_slider_get_option", $options[ $option ], $option, $options, $default );
 				} else {
+					if ( $is_checkbox ) {
+						return apply_filters( "wp_logo_slider_get_option", '', $option, $options, $default );
+					}
+
 					return apply_filters( "wp_logo_slider_get_option", $default, $option, $options, $default );
 				}
 			}
 
 			public function update_option( $key, $value ) {
-				$options         = get_option( 'wp_logo_slider_setting' );
+				$options         = get_option( 'wp_logo_slider_settings' );
 				$options[ $key ] = $value;
 
-				update_option( 'wp_logo_slider_setting', $options );
+				update_option( 'wp_logo_slider_settings', $options );
 			}
 		}
 
