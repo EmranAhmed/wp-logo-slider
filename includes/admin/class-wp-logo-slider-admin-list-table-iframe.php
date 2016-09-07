@@ -50,8 +50,8 @@
 
 				//$posts_columns['cb'] = '<input type="checkbox" />';
 				$posts_columns[ 'title' ]            = esc_html_x( 'Title', 'column name', 'wp-logo-slider' );
-				$posts_columns[ 'grid_column' ]      = esc_html_x( 'Grid Column', 'column name', 'wp-logo-slider' );
-				$posts_columns[ 'gallery_template' ] = esc_html_x( 'Template', 'column name', 'wp-logo-slider' );
+				//$posts_columns[ 'grid_column' ]      = esc_html_x( 'Grid Column', 'column name', 'wp-logo-slider' );
+				//$posts_columns[ 'gallery_template' ] = esc_html_x( 'Template', 'column name', 'wp-logo-slider' );
 				$posts_columns[ 'add_button' ]       = esc_html_x( 'Action', 'column name', 'wp-logo-slider' );
 
 				return $posts_columns;

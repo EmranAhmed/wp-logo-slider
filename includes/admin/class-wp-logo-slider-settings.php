@@ -20,7 +20,6 @@
 				do_action( 'wp_logo_slider_settings_init', $this );
 			}
 
-
 			public function settings_init() {
 
 				register_setting( $this->settings_name, $this->settings_name );
@@ -34,14 +33,16 @@
 					foreach ( $tabs[ 'sections' ] as $section ) {
 
 						add_settings_section(
-							$tabs[ 'id' ] . $section[ 'id' ],
+							$tabs[ 'id' ] . '-' . $section[ 'id' ],
 							$section[ 'title' ],
 							function () use ( $section ) {
 								if ( isset( $section[ 'desc' ] ) && ! empty( $section[ 'desc' ] ) ) {
 									echo '<div class="inside">' . $section[ 'desc' ] . '</div>';
 								}
+
+								return $section;
 							},
-							$tabs[ 'id' ] . $section[ 'id' ]
+							$tabs[ 'id' ] . '-' . $section[ 'id' ]
 						);
 
 						$section = apply_filters( 'wp_logo_slider_setting_fields', $section, $tabs );
@@ -61,8 +62,8 @@
 								$field[ 'title' ],
 								//array( $this, $field[ 'type' ] . '_field_callback' ),
 								array( $this, 'field_callback' ),
-								$tabs[ 'id' ] . $section[ 'id' ],
-								$tabs[ 'id' ] . $section[ 'id' ],
+								$tabs[ 'id' ] . '-' . $section[ 'id' ],
+								$tabs[ 'id' ] . '-' . $section[ 'id' ],
 								$field
 							);
 						}
@@ -259,9 +260,11 @@
 				?>
 				<div class="wrap settings-wrap">
 
-					<h1><?php echo get_admin_page_title() ?><span class="title-count"><?php echo WP_Logo_Slider()->plugin_data( 'Version' ) ?></span></h1>
+					<h1><?php echo get_admin_page_title() ?>
+						<small><sup><span class="title-count"><?php echo WP_Logo_Slider()->plugin_data( 'Version' ) ?></span></sup></small>
+					</h1>
 
-					<form method="post" action="options.php" enctype="multipart/form-data">
+					<form method="post" action="<?php echo esc_url( admin_url( 'options.php' ) ) ?>" enctype="multipart/form-data">
 						<?php
 							settings_errors();
 							settings_fields( $this->settings_name );
@@ -269,14 +272,12 @@
 
 						<?php $this->options_tabs(); ?>
 
-						<div id="settings-tabs">
+						<div id="settings-tabs" class="wp-logo-slider-settings-container">
 							<?php foreach ( $this->fields as $tab ): ?>
 
-								<div id="<?php echo $tab[ 'id' ] ?>"
-								     class="settings-tab wp-logo-slider-setting-tab"
-								     style="<?php echo( ! isset( $tab[ 'active' ] ) ? 'display: none' : '' ) ?>">
+								<div id="<?php echo $tab[ 'id' ] ?>" class="settings-tab wp-logo-slider-setting" style="<?php echo( ! isset( $tab[ 'active' ] ) ? 'display: none' : '' ) ?>">
 									<?php foreach ( $tab[ 'sections' ] as $section ):
-										$this->do_settings_sections( $tab[ 'id' ] . $section[ 'id' ] );
+										$this->do_settings_sections( $tab[ 'id' ] . '-' . $section[ 'id' ] );
 									endforeach; ?>
 								</div>
 
@@ -316,16 +317,32 @@
 					}
 
 					if ( $section[ 'callback' ] ) {
-						call_user_func( $section[ 'callback' ], $section );
+						$section_args = call_user_func( $section[ 'callback' ], $section );
 					}
 
 					if ( ! isset( $wp_settings_fields ) || ! isset( $wp_settings_fields[ $page ] ) || ! isset( $wp_settings_fields[ $page ][ $section[ 'id' ] ] ) ) {
 						continue;
 					}
 
-					echo '<table class="form-table">';
+					$main_table_class = '';
+					if ( isset( $section_args[ 'help' ] ) && ! empty( $section_args[ 'help' ] ) ) {
+						$main_table_class = 'table-inline table-inline-60';
+					}
+
+					echo '<table class="form-table ' . $main_table_class . '">';
 					$this->do_settings_fields( $page, $section[ 'id' ] );
 					echo '</table>';
+					if ( isset( $section_args[ 'help' ] ) && ! empty( $section_args[ 'help' ] ) ) {
+						echo '<table class="form-table table-help table-inline table-inline-40">';
+						echo '<tbody>';
+						echo '<tr>';
+						echo '<td>';
+						echo $section_args[ 'help' ];
+						echo '</td>';
+						echo '</tr>';
+						echo '</tbody>';
+						echo '</table>';
+					}
 				}
 			}
 

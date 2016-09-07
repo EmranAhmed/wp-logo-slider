@@ -204,8 +204,9 @@ jQuery(function ($) {
                 window.sessionStorage.setItem('wp-logo-slider-active-setting-tab', $(this).index());
             }
 
-            $('.wp-logo-slider-setting-tab').hide();
+            $('.wp-logo-slider-setting').hide();
             $(id).show();
+
         });
 
 

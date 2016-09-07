@@ -1,0 +1,1 @@
+<div class="wp-logo-slider-wrapper">

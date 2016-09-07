@@ -2,9 +2,9 @@
 
 	defined( 'ABSPATH' ) or die( 'Keep Quit' );
 
-	if ( ! class_exists( 'WP_Logo_Slider_Admin_Assets' ) ) :
+	if ( ! class_exists( 'WP_Logo_Slider_Assets' ) ) :
 
-		class WP_Logo_Slider_Admin_Assets {
+		class WP_Logo_Slider_Assets {
 
 			/**
 			 * Hook in tabs.
@@ -12,6 +12,33 @@
 			public function __construct() {
 				add_action( 'admin_enqueue_scripts', array( $this, 'admin_styles' ) );
 				add_action( 'admin_enqueue_scripts', array( $this, 'admin_scripts' ) );
+
+				add_action( 'enqueue_scripts', array( $this, 'styles' ) );
+				add_action( 'enqueue_scripts', array( $this, 'scripts' ) );
+			}
+
+			/**
+			 * Enqueue styles.
+			 */
+			public function styles() {
+
+
+				// Register styles
+				wp_register_style( 'wp-logo-slider-carousel', WP_Logo_Slider()->plugin_url() . '/assets/css/owl.carousel.css' );
+				wp_register_style( 'wp-logo-slider-carousel-theme', WP_Logo_Slider()->plugin_url() . '/assets/css/owl.theme.css' );
+				wp_register_style( 'wp-logo-slider-carousel-transitions', WP_Logo_Slider()->plugin_url() . '/assets/css/owl.transitions.css' );
+
+
+				$deps = array( 'wp-logo-slider-carousel', 'wp-logo-slider-carousel-theme' );
+
+				if ( WP_Logo_Slider()->get_option( 'enable_animation', FALSE ) ) {
+					$deps[] = 'wp-logo-slider-carousel-transitions';
+				}
+
+				wp_register_style( 'wp-logo-slider-style', WP_Logo_Slider()->plugin_url() . '/assets/css/style.css', apply_filters( 'wp_logo_slider_style_deps', $deps ) );
+
+				wp_enqueue_style( 'wp-logo-slider-style' );
+
 			}
 
 			/**
@@ -64,5 +91,5 @@
 			}
 		}
 
-		new WP_Logo_Slider_Admin_Assets();
+		new WP_Logo_Slider_Assets();
 	endif;

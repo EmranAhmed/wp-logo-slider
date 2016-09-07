@@ -46,6 +46,36 @@
     float : left;
     }
 
+/**
+Settings Panels
+*/
 [data-depends], .dependency-field {
     display : none;
+    }
+
+.table-inline {
+    display        : inline-block;
+    vertical-align : top;
+    }
+
+.table-inline-30 {
+    width : 30%;
+    }
+
+.table-inline-40 {
+    width : 40%;
+    }
+
+.table-inline-60 {
+    width : 60%;
+    }
+
+.table-inline-70 {
+    width : 70%;
+    }
+
+@media screen and (max-width : 782px) {
+    .table-help {
+        display : none;
+        }
     }

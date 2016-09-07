@@ -107,16 +107,22 @@
 
 			private function includes() {
 
+				// Global Include
 				include_once 'includes/wp-logo-slider-functions.php';
 				include_once 'includes/class-wp-logo-slider-post-type.php';
+				include_once 'includes/class-wp-logo-slider-assets.php';
 
+				// Admin Include
 				if ( is_admin() ) {
 					include_once 'includes/admin/wp-logo-slider-settings-fields.php';
 					include_once 'includes/admin/class-wp-logo-slider-settings.php';
-					include_once 'includes/admin/class-wp-logo-slider-admin-assets.php';
+
 					include_once 'includes/admin/meta-boxes/class-wp-logo-slider-meta-box-images.php';
 					include_once 'includes/admin/class-wp-logo-slider-admin-meta-boxes.php';
 					include_once 'includes/admin/class-wp-logo-slider-admin-media-tab.php';
+				} else {
+					include_once 'includes/wp-logo-slider-template-functions.php';
+					include_once 'includes/class-wp-logo-slider-shortcodes.php';
 				}
 			}
 
